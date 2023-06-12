@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<title>Table Test</title>
+		<meta name="description" content="" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="" />
+		<style>
+			#fretboard {
+				background: rgb(73, 44, 6);
+				background: linear-gradient(
+					rgba(73, 44, 6, 1) 0%,
+					rgba(147, 91, 11, 1) 50%,
+					rgba(73, 44, 6, 1) 100%
+				);
+				border: solid rgb(192, 192, 192) 2px;
+
+				border-collapse: collapse;
+			}
+
+			.highlight {
+				background-color: #2a8525;
+			}
+
+			.blink_root {
+				animation: blinker 2s linear infinite;
+				background-color: #2a8525;
+			}
+
+			@keyframes blinker {
+				50% {
+					opacity: 0;
+				}
+			}
+
+			body {
+				margin: 10px 10px;
+				padding: 0 auto;
+				font-family: sans-serif;
+				align-items: center;
+			}
+
+			td {
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+			}
+
+			td:hover {
+				background: #2a8525;
+				transition: background-color 0.75s;
+			}
+		</style>
+
+		<script>
+			var chromatic_notes = [];
+			var fretboardTuning = {};
+			var fretboardStringTuning = [];
+			var fretIsVisited = []
+			var scaleSpacing = [];
+			var toHighlight;
+			var endRoot;
+			var rootMapping = {};
+			var rootEndPoints = {
+				startString: new Number(),
+				startFret: new Number(),
+				endString: new Number(),
+				endFret: new Number(),
+			};
+
+			var rootPaths = {
+				//array of coordinates [string,fret] is visited = true|false
+        		visitedString : {},
+				visitedFret: {},
+			}
+
+			//isVisited: {string, fret} = true|false
+
+			window.onload = () => {
+				var fretboard = document.getElementById("fretboard");
+				createTable();
+				createNotes();
+			};
+
+			function createTable() {
+				//var fretboard = document.getElementById("fretboard");
+				//https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Traversing_an_HTML_table_with_JavaScript_and_DOM_Interfaces
+
+				for (let stringNum = 0; stringNum < 6; stringNum++) {
+					const string = document.createElement("tr");
+					string.style.height = "4em";
+					let fbLength = 25.5;
+
+					for (let fretNum = 0; fretNum < 24; fretNum++) {
+						const fret = document.createElement("td");
+						const i = 17.817;
+						let fretLength = fbLength / i;
+						fbLength = fbLength - fretLength;
+						fret.style.width = fretLength.toString() + "in";
+						fret.style.borderRight = "solid rgb(192,192,192) 1px";
+						string.appendChild(fret);
+					}
+
+					fretboard.appendChild(string);
+				} // end outer for
+
+				//console.log(fretboard.getElementsByTagName("tr")[0].childNodes[0]);
+			} // end createTable
+
+			function findNearestRoots(fret, rootArray){
+
+				console.log(`rootArray ${rootArray}`)
+
+				for(r of rootArray){ // 'of' displays object properties. 'in' lists index number only
+					console.log(r.cellIndex)
+					console.log(r.closest("tr").rowIndex)
+				}
+
+				//find the next root in twelve steps (length of chromatic_notes)
+				let chromaticCount = chromatic_notes.length
+				
+				console.log(`rootendpoints start string ${rootEndPoints.startString}`)
+				console.log(`rootendpoints start fret ${rootEndPoints.startFret}`)
+				console.log(`event string ${fret.target.closest("tr").rowIndex}`)
+				console.log(`event fret ${fret.target.cellIndex}`)
+				let startRefString = fret.target.closest("tr").rowIndex
+				let startFret = fret.target.cellIndex
+				console.log(` index of chromatic notes ${chromatic_notes.indexOf(fret.target.classList[0])}`)
+
+				//console.log(fret.classList[0])
+				//console.log("fret row index " + fret.closest("tr").rowIndex)
+				//console.log("fret row index " + fret.cellIndex)
+
+				/*
+				if( fretboard coordinate == fret.classList[0])
+					assign location to map
+					then choose end location, find all paths
+				*/
+
+				//if on same line, check if index location is <= chromatic_notes.length
+				// forwards is backwards (0,0 is upper left)
+				//if(startRefString < 5 && startRefString > 0){
+				if(0 < startRefString < 5){
+					console.log(`start ref string ${startRefString}`)
+				}
+					// traverse string nums backwards (chromatic notes forward) 
+					// and string nums forwards (chromatic notes backwards)
+				
+				if(startRefString = 0){
+					//traverse string nums forwards (chromatic notes backwards)
+					// and chromatic notes forwards
+				}
+				if(startRefString = 5){
+					//traverse string nums backwards (chromatic notes forward)
+				}
+
+				//for all nearest roots, specify new event listener
+					//print index locations of nearest roots for debuging
+					//findPaths(or locations)(next chromatic note)
+					//assign index locations into map
+						//map containing arrays of coordinates of notes found
+					//fret.removeEventListener("click", highlightRoots2)
+					// add new event listener - rootEndPoints.end =   next chosen root
+						//BFS search algo between start and end root
+			}
+
+			async function highlightRoots2(evt) {
+				toHighlight = evt.target.classList[0] //this variable is used for scale creation
+				let rootArray = []
+				fretboard.querySelectorAll("td").forEach((fret) =>{
+					if(fret.classList[0] == evt.target.classList[0]){
+						rootArray.push(fret)
+						if(fret == evt.target){
+
+							//get coordinates (string, fret) of selected start root
+							//https://stackoverflow.com/questions/45656949/how-to-return-the-row-and-column-index-of-a-table-cell-by-clicking
+							let strngNum = Number(fret.closest("tr").rowIndex);
+							let fretIndex = fret.cellIndex
+
+							rootEndPoints.startString = strngNum;
+							rootEndPoints.startFret = fretIndex;
+
+							fretIsVisited[rootEndPoints.startString][rootEndPoints.startFret] = true
+
+							//do search for nearest roots
+						}
+
+						fret.classList.add("blink_root");
+						
+					}else{
+						fret.classList.remove("blink_root")
+						fretIsVisited[rootEndPoints.startString][rootEndPoints.startFret] = false
+						//fret.addEventListener("click", highlightRoots2)
+						//fret.removeEventListener("click", highlightRoots2)
+					}
+					
+				})
+				findNearestRoots(evt, rootArray);
+			} //end highlight roots2
+
+			function createNotes() {
+				let notes = ["a", "b", "c", "d", "e", "f", "g"];
+
+				for (let i = 0; i < notes.length; i++) {
+					if (!notes[i].match("b|e")) {
+						chromatic_notes.push(notes[i]);
+
+						if (notes[i] != "g") {
+							let flatSharp = notes[i] + "#" + "|" + notes[i + 1] + "b";
+							chromatic_notes.push(flatSharp);
+						} else {
+							let flatSharp = notes[i] + "#" + "|" + notes[0] + "b";
+							chromatic_notes.push(flatSharp);
+						}
+					} else {
+						chromatic_notes.push(notes[i]);
+					}
+				} //end chromatic_note array creation
+
+				//return chromatic_notes;
+				console.log("chromatic_notes: " + chromatic_notes);
+			} //  end createNotes()
+
+			function selectTuning(tuning) {
+				//fretboardStringTuning = [];
+				//fretIsVisited = [];
+				//choose the tunings of the strings
+				switch (tuning) {
+					case "standard":
+						notes = ["e", "a", "d", "g", "b", "e"];
+						break;
+					case "dropD":
+						notes = ["d", "a", "d", "g", "b", "e"];
+						break;
+				}
+
+				//fretboardStringTuning is an array of array. the first array is the string number. The second array contains the notes
+				for (var note in notes.reverse()) {
+					fretboardStringTuning[note] = [];
+					fretIsVisited[note] = []
+					let m = 0;
+					let n = chromatic_notes.indexOf(notes[note]);
+
+					while (m < 24) {
+						fretboardStringTuning[note].push(chromatic_notes[n]);
+						fretIsVisited[note].push(false) //default to False for isVisited table
+						n++;
+						if (n == chromatic_notes.length) {
+							n = 0;
+						}
+						m++;
+					}
+				}
+
+				// output fretboardStringTuning to console for debugging purposes
+				/*
+				let tmp = 0;
+				for (tmp = 0; tmp < notes.length; tmp++) {
+					console.log(` Note ${fretboardStringTuning[tmp]}`);
+					console.log(` isVisited ${fretIsVisited[tmp]} `)
+				}
+				*/
+
+				//After tuning is selected, traverse fretboard and re-populate frets
+				repopulateFretBoard(fretboardStringTuning, notes);
+			} // end selectTuning()
+
+			function repopulateFretBoard(fretboardStringTuning) {
+				for (let string = 0; string < fretboard.rows.length; string++) {
+					let stringNum = fretboard.rows[string].childNodes; // string number
+
+					for (let fret = 0; fret < stringNum.length; fret++) {
+						stringNum[fret].innerText = ""; // clear previous contents
+						let fretNote = fretboardStringTuning[string][fret];
+						if (fretNote.match(/^[a-g]$/)) { //populate frets with notes (ignore sharps/flats)
+							stringNum[fret].innerText = fretNote;
+						}
+						stringNum[fret].className = fretNote;
+
+						//highlight all roots of selected notes
+						stringNum[fret].addEventListener("click", highlightRoots2, false)
+
+					} //end inner for
+				} // end outer for
+			} // end repopulateFretBoard
+
+			function selectScale(scale) {
+				switch (scale) {
+					case "Ionian":
+						scalePattern = [2, 2, 1, 2, 2, 2, 1];
+						break;
+					case "Dorian":
+						scalePattern = [2, 1, 2, 2, 2, 1, 2];
+						break;
+					case "Phrygian":
+						scalePattern = [1, 2, 2, 2, 1, 2, 2];
+						break;
+					case "Lydian":
+						scalePattern = [2, 2, 2, 1, 2, 2, 1];
+						break;
+					case "Mixolydian":
+						scalePattern = [2, 2, 1, 2, 2, 1, 2];
+						break;
+					case "Aeolian":
+						scalePattern = [2, 1, 2, 2, 1, 2, 2];
+						break;
+					case "Locrian":
+						scalePattern = [1, 2, 2, 1, 2, 2, 2];
+						break;
+				} // end switch
+
+				//take root note. start from chromatic scale. apply spaces
+				//make adjustments for flat/sharp
+				if(toHighlight == null){
+					alert("Please choose a starting root note!")
+				}
+
+				let noteIndex = chromatic_notes.indexOf(toHighlight);
+				scaleSpacing = [];
+				let spacing = 0,
+					tmp = 0,
+					i = 0;
+
+				//start from chromatic_notes position of root, apply spacing of scale accordingly
+				while (i < 7) {
+					scaleSpacing.push(chromatic_notes[noteIndex]);
+					tmp = scalePattern.shift(0);
+
+					if (noteIndex + tmp >= chromatic_notes.length) {
+						noteIndex = noteIndex + tmp - chromatic_notes.length;
+					} else {
+						noteIndex += tmp;
+					}
+					i++;
+				}
+				console.log(scaleSpacing);
+
+			}
+		</script>
+	</head>
+	<body>
+		<!--[if lt IE 7]>
+			<p class="browsehappy">
+				You are using an <strong>outdated</strong> browser. Please
+				<a href="#">upgrade your browser</a> to improve your experience.
+			</p>
+		<![endif]-->
+		<table id="fretboard"></table>
+		<select
+			name="tuning"
+			id="tuning-select"
+			onchange="selectTuning(this.value)"
+		>
+			<option value="">Choose a tuning</option>
+			<option value="standard">Standard</option>
+			<option value="dropD">Drop D</option>
+		</select>
+
+		<select name="scale" id="scale-select" onchange="selectScale(this.value)">
+			<option value="">Choose a scale</option>
+			<option value="Ionian">Ionian (Major)</option>
+			<option value="Dorian">Dorian</option>
+			<option value="Phrygian">Phrygian</option>
+			<option value="Lydian">Lydian</option>
+			<option value="Mixolydian">Mixolydian</option>
+			<option value="Aeolian">Aeolian (Minor)</option>
+			<option value="Locrian">Locrian</option>
+		</select>
+
+		<script src="" async defer></script>
+	</body>
+</html>
