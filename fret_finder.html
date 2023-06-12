@@ -7,11 +7,21 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<title>Table Test</title>
+		<title>Fret Finder</title>
 		<meta name="description" content="" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="" />
 		<style>
+
+			body {
+				padding: 0 auto;
+				margin: 0 auto;
+				font-family: sans-serif;
+				align-items: center;
+				background-color: #F7E6C4;
+
+			}
+
 			#fretboard {
 				background: rgb(73, 44, 6);
 				background: linear-gradient(
@@ -22,6 +32,17 @@
 				border: solid rgb(192, 192, 192) 2px;
 
 				border-collapse: collapse;
+				margin:2em;
+				margin-left: auto;
+ 				margin-right: auto;
+				
+			}
+
+			#fretMarkers{
+				margin:2em;
+				border-collapse: collapse;
+				margin-left: auto;
+ 				margin-right: auto;
 			}
 
 			.highlight {
@@ -39,22 +60,19 @@
 				}
 			}
 
-			body {
-				margin: 10px 10px;
-				padding: 0 auto;
-				font-family: sans-serif;
-				align-items: center;
-			}
-
 			td {
 				justify-content: center;
 				align-items: center;
 				text-align: center;
 			}
 
-			td:hover {
+			#fretboard td:hover {
 				background: #2a8525;
 				transition: background-color 0.75s;
+			}
+
+			#selections {
+				text-align: center;
 			}
 		</style>
 
@@ -80,9 +98,9 @@
 				visitedFret: {},
 			}
 
-			//isVisited: {string, fret} = true|false
 
 			window.onload = () => {
+				//show a welcome banner describing what this application is and what it is meant to do
 				var fretboard = document.getElementById("fretboard");
 				createTable();
 				createNotes();
@@ -110,16 +128,40 @@
 					fretboard.appendChild(string);
 				} // end outer for
 
+				//add fret markers
+				var fbMarker = document.getElementById("fretMarkers")
+				const fretMarkerRow = document.createElement("tr");
+				let fbLength = 25.5;
+				for (let fretNum = 0; fretNum < 24; fretNum++) {
+					const fretMarker = document.createElement("td");
+					const i = 17.817;
+					let fretLength = fbLength / i;
+					fbLength = fbLength - fretLength;
+					fretMarker.style.width = fretLength.toString() + "in";
+					fretMarker.style.borderRight = "solid rgb(192,192,192) 1px";
+					
+					
+					//if(fretNum == 0||fretNum == 3 || fretNum ==  5 || fretNum == 7 || fretNum == 9 || fretNum == 12){
+					if(String(fretNum).match(/^(0|3|5|7|9|12|15|17|19|21|23)$/)){
+						fretMarker.innerHTML = fretNum
+						fretMarker.style.fontSize = "20px"
+						fretMarker.style.textAlign = "center"
+						//fretMarker.style.whiteSpace = "nowrap"
+						
+					}
+					fretMarkerRow.appendChild(fretMarker);
+				}
+				fbMarker.appendChild(fretMarkerRow);
+
 				//console.log(fretboard.getElementsByTagName("tr")[0].childNodes[0]);
 			} // end createTable
 
 			function findNearestRoots(fret, rootArray){
 
-				console.log(`rootArray ${rootArray}`)
+				// console.log(`rootArray ${rootArray}`)
 
 				for(r of rootArray){ // 'of' displays object properties. 'in' lists index number only
-					console.log(r.cellIndex)
-					console.log(r.closest("tr").rowIndex)
+					console.log(`${r.cellIndex}  ${r.closest("tr").rowIndex}`)
 				}
 
 				//find the next root in twelve steps (length of chromatic_notes)
@@ -200,7 +242,7 @@
 						//fret.removeEventListener("click", highlightRoots2)
 					}
 					
-				})
+				}) // end foreach
 				findNearestRoots(evt, rootArray);
 			} //end highlight roots2
 
@@ -280,6 +322,10 @@
 						let fretNote = fretboardStringTuning[string][fret];
 						if (fretNote.match(/^[a-g]$/)) { //populate frets with notes (ignore sharps/flats)
 							stringNum[fret].innerText = fretNote;
+							stringNum[fret].style.fontSize = "20px"
+							stringNum[fret].style.color = "white"
+							stringNum[fret].style.fontfamily = "san-serif";
+							
 						}
 						stringNum[fret].className = fretNote;
 
@@ -318,7 +364,7 @@
 				//take root note. start from chromatic scale. apply spaces
 				//make adjustments for flat/sharp
 				if(toHighlight == null){
-					alert("Please choose a starting root note!")
+					alert("Please choose a starting root note first!")
 				}
 
 				let noteIndex = chromatic_notes.indexOf(toHighlight);
@@ -352,6 +398,9 @@
 			</p>
 		<![endif]-->
 		<table id="fretboard"></table>
+		<table id="fretMarkers"></table>
+
+		<div id="selections">
 		<select
 			name="tuning"
 			id="tuning-select"
@@ -372,7 +421,7 @@
 			<option value="Aeolian">Aeolian (Minor)</option>
 			<option value="Locrian">Locrian</option>
 		</select>
-
+	</div>
 		<script src="" async defer></script>
 	</body>
 </html>
